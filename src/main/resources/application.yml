@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: OnlineBankingSystem
+  datasource:
+    url: jdbc:mysql://localhost:3306/onlineBanking_db?createDatabaseIfNotExist=true
+    username: root
+    password: code
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    datasource-platform: org.hibernate.dialect.MySQLDialect
+jwt:
+  secret: "your-very-long-and-secure-secret-key-1234567890123456"
+  expiration: 86400 # 1 day in seconds
