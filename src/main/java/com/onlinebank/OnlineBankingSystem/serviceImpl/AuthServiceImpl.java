@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +24,12 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),request.getPassword()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        boolean roleMatch = userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_"+request.getRole()));
-        if (!roleMatch){
-            throw new RuntimeException("Role mismatches: Access denied for role"+request.getRole());
-        }
+       String role = userDetails.getAuthorities()
+               .stream()
+               .map(GrantedAuthority::getAuthority)
+               .findFirst()
+               .orElse("USER");
         String token = jwtUtil.generateToken(userDetails);
-        return new JwtResponse(token);
+        return new JwtResponse(token, request.getEmail(), role);
     }
 }
